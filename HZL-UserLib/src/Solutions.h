@@ -93,10 +93,36 @@ public:
 //	s consists of English letters, digits, symbols and spaces.
 //
 	int lengthOfLongestSubstring(std::string s);
+
+//	5. Longest Palindromic Substring
+//		Solved
+//		Medium
+//		Topics
+//		premium lock icon
+//		Companies
+//		Hint
+//		Given a string s, return the longest palindromic substring in s.
+//
+//
+//
+//		Example 1:
+//
+//Input: s = "babad"
+//	Output : "bab"
+//	Explanation : "aba" is also a valid answer.
+//	Example 2 :
+//
+//	Input : s = "cbbd"
+//	Output : "bb"
+//
+//
+//	Constraints :
+//
+//	1 <= s.length <= 1000
+//	s consist of only digits and English letters.
+	std::string longestPalindrome(std::string s);
 };
 
 
-//this question is done.I llike this way of explain the code very much, as showing an example, and moving forward each step in code 
-//along with the example is very helpful.Please, please please use this way for each question in the future.
 //when i show you a problem.Please show an fair complicated example, and explain code each step, each loop, until the example is done.
 //and please always use the time - efficient way to solve problem, as nowadyas, space is not as critical as speed.
