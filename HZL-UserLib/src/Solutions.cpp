@@ -130,4 +130,40 @@ std::string Solution::longestPalindrome(std::string s)
 
 
 
+std::string Solution::convert(std::string s, int numRows) {
+	// 1. Handle edge cases: No zigzag possible
+	if (numRows <= 1 || s.length() <= numRows) return s;
 
+	std::string result;
+	int n = s.length();
+
+	// 2. The Period (Step size): One full "V" shape cycle
+	// Down (numRows) + Up (numRows - 2)
+	int cycleLen = 2 * numRows - 2;
+
+	// 3. Optimization: Allocate all memory at once
+	result.reserve(n);
+
+	// 4. Iterate row by row
+	for (int i = 0; i < numRows; i++) {
+		// Traverse the string in jumps of cycleLen
+		for (int j = 0; j + i < n; j += cycleLen) {
+
+			// --- Step A: The Vertical Character ---
+			// Every row has at least one character per cycle
+			result += s[j + i];
+
+			// --- Step B: The Diagonal Character ---
+			// Middle rows (not top, not bottom) have a second character
+			if (i != 0 && i != numRows - 1) {
+				int diagonalIdx = j + cycleLen - i; // The "Reflected" index
+
+				if (diagonalIdx < n) {
+					result += s[diagonalIdx];
+				}
+			}
+		}
+	}
+
+	return result;
+}
