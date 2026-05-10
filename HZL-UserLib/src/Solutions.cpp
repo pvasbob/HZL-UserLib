@@ -99,6 +99,9 @@ std::string Solution::longestPalindrome(std::string s)
 		// 2. Use the "Mirror Trick" to skip redundant work
 		if (i < right) 
 		{
+			// center >= right - center  > i - center 
+			// center - (i-center) > 0
+			// mirror  = 2*center -i  > 0
 			int mirror = 2 * center - i;
 			p[i] = std::min(right - i, p[mirror]);
 		}
@@ -110,6 +113,7 @@ std::string Solution::longestPalindrome(std::string s)
 		}
 
 		// 4. Update the "Frontier" if we found a palindrome reaching further right
+		// algorithm does not care about the "biggest" palindrome found so far; it cares about the "furthest" one.
 		if (i + p[i] > right) {
 			center = i;
 			right = i + p[i];
