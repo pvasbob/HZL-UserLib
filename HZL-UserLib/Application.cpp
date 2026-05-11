@@ -1,6 +1,6 @@
 #include <iostream>
 
-void main() 
+int main() 
 {
 	std::cout << "Compile Successfully" << std::endl;
 }

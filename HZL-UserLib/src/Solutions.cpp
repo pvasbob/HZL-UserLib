@@ -89,7 +89,7 @@ std::string Solution::longestPalindrome(std::string s)
 		t += "#"; 
 	}
 
-	int n = t.length();
+	size_t n = t.length();
 	std::vector<int> p(n, 0); // Palindrome radius array
 	int center = 0, right = 0;
 	int maxLen = 0, maxCenter = 0;
@@ -135,7 +135,7 @@ std::string Solution::convert(std::string s, int numRows) {
 	if (numRows <= 1 || s.length() <= numRows) return s;
 
 	std::string result;
-	int n = s.length();
+	size_t n = s.length();
 
 	// 2. The Period (Step size): One full "V" shape cycle
 	// Down (numRows) + Up (numRows - 2)
@@ -167,3 +167,138 @@ std::string Solution::convert(std::string s, int numRows) {
 
 	return result;
 }
+
+
+
+int Solution::reverse(int x) {
+	int rev = 0;
+	while (x != 0) {
+		// Step 1: Extract the digit
+		int pop = x % 10;
+		x /= 10;
+
+		// -2,147,483,648 to 2,147,483,647.
+		// Step 2: Portable Overflow Check
+		// We check if multiplying 'rev' by 10 will exceed INT_MAX.
+		// INT_MAX / 10 is a constant (214748364).
+		if (rev > INT_MAX / 10 || (rev == INT_MAX / 10 && pop > 7)) return 0;
+
+		// Step 3: Portable Underflow Check
+		// INT_MIN / 10 is a constant (-214748364).
+		if (rev < INT_MIN / 10 || (rev == INT_MIN / 10 && pop < -8)) return 0;
+
+		// Step 4: Combine
+		rev = rev * 10 + pop;
+	}
+	return rev;
+}
+
+
+// Fast I/O optimization
+// The compiler sees static const int _, executes the lambda, and breaks the sync between C and C++ streams.
+// lambda function: one time setup routine.
+// static keyword is the engine that forces the execution to happen during that loading/initialization window.
+// and after that the main() begins.
+static const int _ = []() {
+	std::ios::sync_with_stdio(false);
+	std::cin.tie(NULL);
+	return 0;
+}();
+
+int Solution::myAtoi(std::string s) {
+	int i = 0;
+	int n = s.length();
+
+	// 1. Skip leading whitespace
+	while (i < n && s[i] == ' ') {
+		i++;
+	}
+
+	if (i == n) return 0;
+
+	// 2. Handle sign
+	int sign = 1;
+	if (s[i] == '-') {
+		sign = -1;
+		i++;
+	}
+	else if (s[i] == '+') {
+		i++;
+	}
+
+	// 3. Convert digits and check for overflow
+	int res = 0;
+	while (i < n && s[i] >= '0' && s[i] <= '9') {
+		int digit = s[i] - '0';
+
+		// Overflow check (identical logic to Integer Reverse)
+		if (res > INT_MAX / 10 || (res == INT_MAX / 10 && digit > 7)) {
+			return (sign == 1) ? INT_MAX : INT_MIN;
+		}
+
+		res = res * 10 + digit;
+		i++;
+	}
+
+	return res * sign;
+}
+
+
+bool Solution::isPalindrome(int x) {
+	// Special cases:
+			// x < 0 is never a palindrome.
+			// If the last digit is 0, the first digit must also be 0 (only 0 itself fits this).
+	if (x < 0 || (x % 10 == 0 && x != 0)) {
+		return false;
+	}
+
+	int revertedNumber = 0;
+	while (x > revertedNumber) {
+		revertedNumber = revertedNumber * 10 + x % 10;
+		x /= 10;
+	}
+
+	// When the length is an odd number, we can get rid of the middle digit by revertedNumber/10
+	// For example, when x = 121, at the end of the loop we have x = 1, revertedNumber = 12
+	// Since the middle digit doesn't matter in palindrome check, we can simply eliminate it.
+	return x == revertedNumber || x == revertedNumber / 10;
+
+}
+
+bool Solution::isMatch(std::string s, std::string p) {
+	int m = s.length();
+	int n = p.length();
+
+	// dp[i][j] means s[0..i-1] matches p[0..j-1]
+	std::vector<std::vector<bool>> dp(m + 1, std::vector<bool>(n + 1, false));
+
+	dp[0][0] = true;
+
+	// Deailing with patterns that can match an empty string (e.g., a*, a*b*)
+	for (int j = 2; j <= n; j++) {
+		if (p[j - 1] == '*') {
+			dp[0][j] = dp[0][j - 2];
+		}
+	}
+
+	for (int i = 1; i <= m; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (p[j - 1] == s[i - 1] || p[j - 1] == '.') {
+				dp[i][j] = dp[i - 1][j - 1];
+			}
+			else if (p[j - 1] == '*') 
+			{
+				// Case 1: * counts as empty (skip the character and the *)
+				dp[i][j] = dp[i][j - 2];
+
+				// Case 2: * counts as one or more (if preceding char matches)
+				if (p[j - 2] == s[i - 1] || p[j - 2] == '.') {
+					dp[i][j] = dp[i][j] || dp[i - 1][j];
+				}
+			}
+		}
+	}
+
+	return dp[m][n];
+}
+
