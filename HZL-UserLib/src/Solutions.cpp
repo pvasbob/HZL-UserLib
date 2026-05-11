@@ -302,3 +302,30 @@ bool Solution::isMatch(std::string s, std::string p) {
 	return dp[m][n];
 }
 
+int Solution::maxArea(std::vector<int>& height) {
+	int max_water = 0;
+	int left = 0;
+	int right = height.size() - 1;
+
+	while (left < right) {
+		// Calculate current height and width
+		int h = std::min(height[left], height[right]);
+		int w = right - left;
+
+		// Update maximum area if current is larger
+		max_water = std::max(max_water, h * w);
+
+		// Move the pointer pointing to the shorter line
+		if (height[left] < height[right]) {
+			left++;
+		}
+		else {
+			right--;
+		}
+	}
+
+	return max_water;
+}
+
+
+
