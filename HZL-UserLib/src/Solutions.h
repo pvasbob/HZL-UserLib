@@ -363,7 +363,237 @@ bool isMatch(std::string s, std::string p);
 //
 int maxArea(std::vector<int>& height);
 
+
+//
+//Seven different symbols represent Roman numerals with the following values :
+//
+//Symbol	Value
+//I	1
+//V	5
+//X	10
+//L	50
+//C	100
+//D	500
+//M	1000
+//
+//Roman numerals are formed by appending the conversions of decimal place values from highest to lowest.Converting a decimal place value into a Roman numeral has the following rules :
+//
+//If the value does not start with 4 or 9, select the symbol of the maximal value that can be subtracted from the input, append that symbol to the result, subtract its value, and convert the remainder to a Roman numeral.
+//If the value starts with 4 or 9 use the subtractive form representing one symbol subtracted from the following symbol, for example, 4 is 1 (I)less than 5 (V) : IV and 9 is 1 (I)less than 10 (X) : IX.Only the following subtractive forms are used : 4 (IV), 9 (IX), 40 (XL), 90 (XC), 400 (CD) and 900 (CM).
+//Only powers of 10 (I, X, C, M) can be appended consecutively at most 3 times to represent multiples of 10. You cannot append 5 (V), 50 (L), or 500 (D)multiple times.If you need to append a symbol 4 times use the subtractive form.
+//Given an integer, convert it to a Roman numeral.
+//
+//
+//
+//Example 1:
+//
+//Input: num = 3749
+//
+//	Output : "MMMDCCXLIX"
+//
+//	Explanation :
+//
+//	3000 = MMM as 1000 (M)+1000 (M)+1000 (M)
+//	700 = DCC as 500 (D)+100 (C)+100 (C)
+//	40 = XL as 10 (X)less of 50 (L)
+//	9 = IX as 1 (I)less of 10 (X)
+//	Note : 49 is not 1 (I)less of 50 (L)because the conversion is based on decimal places
+//	Example 2 :
+//
+//	Input : num = 58
+//
+//	Output : "LVIII"
+//
+//	Explanation :
+//
+//	50 = L
+//	8 = VIII
+//	Example 3 :
+//
+//	Input : num = 1994
+//
+//	Output : "MCMXCIV"
+//
+//	Explanation :
+//
+//	1000 = M
+//	900 = CM
+//	90 = XC
+//	4 = IV
+//
+//
+//	Constraints :
+//
+//	   1 <= num <= 3999
+//
+std::string intToRoman(int num); 
+
+
+//Roman numerals are represented by seven different symbols : I, V, X, L, C, D and M.
+//
+//Symbol       Value
+//I             1
+//V             5
+//X             10
+//L             50
+//C             100
+//D             500
+//M             1000
+//For example, 2 is written as II in Roman numeral, just two ones added together. 12 is written as XII, which is simply X + II.The number 27 is written as XXVII, which is XX + V + II.
+//
+//Roman numerals are usually written largest to smallest from left to right.However, the numeral for four is not IIII.Instead, the number four is written as IV.Because the one is before the five we subtract it making four.The same principle applies to the number nine, which is written as IX.There are six instances where subtraction is used :
+//
+//I can be placed before V(5) and X(10) to make 4 and 9.
+//X can be placed before L(50) and C(100) to make 40 and 90.
+//C can be placed before D(500) and M(1000) to make 400 and 900.
+//Given a roman numeral, convert it to an integer.
+//
+//
+//
+//Example 1:
+//
+//Input: s = "III"
+//	Output : 3
+//	Explanation : III = 3.
+//	Example 2 :
+//
+//	Input : s = "LVIII"
+//	Output : 58
+//	Explanation : L = 50, V = 5, III = 3.
+//	Example 3 :
+//
+//	Input : s = "MCMXCIV"
+//	Output : 1994
+//	Explanation : M = 1000, CM = 900, XC = 90 and IV = 4.
+//
+//
+//	Constraints :
+//
+//	1 <= s.length <= 15
+//	s contains only the characters('I', 'V', 'X', 'L', 'C', 'D', 'M').
+//	It is guaranteed that s is a valid roman numeral in the range[1, 3999].
+//
+int romanToInt(std::string s);
+
+
+//Write a function to find the longest common prefix string amongst an array of strings.
+//
+//If there is no common prefix, return an empty string "".
+//
+//
+//
+//Example 1:
+//
+//Input: strs = ["flower", "flow", "flight"]
+//	Output : "fl"
+//	Example 2 :
+//
+//	Input : strs = ["dog", "racecar", "car"]
+//	Output : ""
+//	Explanation : There is no common prefix among the input strings.
+//
+//
+//	Constraints :
+//
+//	1 <= strs.length <= 200
+//	0 <= strs[i].length <= 200
+//	strs[i] consists of only lowercase English letters if it is non - empty.
+//
+std::string longestCommonPrefix(std::vector<std::string>& strs); 
+
+
+//Given an integer array nums, return all the triplets[nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and nums[i] + nums[j] + nums[k] == 0.
+//
+//Notice that the solution set must not contain duplicate triplets.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [-1, 0, 1, 2, -1, -4]
+//	Output : [[-1, -1, 2], [-1, 0, 1]]
+//	Explanation :
+//	nums[0] + nums[1] + nums[2] = (-1) + 0 + 1 = 0.
+//	nums[1] + nums[2] + nums[4] = 0 + 1 + (-1) = 0.
+//	nums[0] + nums[3] + nums[4] = (-1) + 2 + (-1) = 0.
+//	The distinct triplets are[-1, 0, 1] and [-1, -1, 2].
+//	Notice that the order of the output and the order of the triplets does not matter.
+//	Example 2:
+//
+//   Input: nums = [0, 1, 1]
+//	   Output : []
+//	   Explanation : The only possible triplet does not sum up to 0.
+//	   Example 3 :
+//
+//	   Input : nums = [0, 0, 0]
+//	   Output : [[0, 0, 0]]
+//	   Explanation : The only possible triplet sums up to 0.
+//
+//
+//	   Constraints :
+//
+//	   3 <= nums.length <= 3000
+//	   - 105 <= nums[i] <= 105
+//
+std::vector<std::vector<int>> threeSum(std::vector<int>& nums);
+
+//
+//Given an integer array nums of length n and an integer target, find three integers at distinct indices in nums such that the sum is closest to target.
+//
+//Return the sum of the three integers.
+//
+//You may assume that each input would have exactly one solution.
+//
+//
+//
+//Example 1:
+//
+//Input: nums = [-1, 2, 1, -4], target = 1
+//	Output : 2
+//	Explanation : The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+//	Example 2 :
+//
+//	Input : nums = [0, 0, 0], target = 1
+//	Output : 0
+//	Explanation : The sum that is closest to the target is 0. (0 + 0 + 0 = 0).
+//
+//
+//	Constraints :
+//
+//	3 <= nums.length <= 500
+//	- 1000 <= nums[i] <= 1000
+//	- 104 <= target <= 104
+//
+int threeSumClosest(std::vector<int>& nums, int target);
+
+
+
+//
+//Given a string containing digits from 2 - 9 inclusive, return all possible letter combinations that the number could represent.Return the answer in any order.
+//
+//A mapping of digits to letters(just like on the telephone buttons) is given below.Note that 1 does not map to any letters.
+//
+//Example 1:
+//
+//Input: digits = "23"
+//	Output : ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"]
+//	Example 2 :
+//
+//	Input : digits = "2"
+//	Output : ["a", "b", "c"]
+//
+//
+//	Constraints :
+//
+//	1 <= digits.length <= 4
+//	digits[i] is a digit in the range['2', '9'].
+//
+std::vector<std::string> letterCombinations(std::string digits); 
+
+
 };
 
 //when i show you a problem.Please show an fair complicated example, and explain code each step, each loop, until the example is done.
 //and please always use the time - efficient way to solve problem, as nowadyas, space is not as critical as speed.
+
+

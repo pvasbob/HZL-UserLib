@@ -206,8 +206,8 @@ static const int _ = []() {
 }();
 
 int Solution::myAtoi(std::string s) {
-	int i = 0;
-	int n = s.length();
+	size_t i = 0;
+	size_t n = s.length();
 
 	// 1. Skip leading whitespace
 	while (i < n && s[i] == ' ') {
@@ -327,5 +327,182 @@ int Solution::maxArea(std::vector<int>& height) {
 	return max_water;
 }
 
+std::string Solution::intToRoman(int num) {
+	// Define the mapping of values to Roman numeral symbols
+	// Including the special subtractive cases (900, 400, etc.)
+	const std::vector<std::pair<int, std::string>> romanMap = {
+		{1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"},
+		{100, "C"},  {90, "XC"},  {50, "L"},  {40, "XL"},
+		{10, "X"},   {9, "IX"},   {5, "V"},   {4, "IV"},
+		{1, "I"}
+	};
+
+	std::string result = "";
+
+	for (const auto& [value, symbol] : romanMap) {
+		// Greedily append the largest possible symbols
+		while (num >= value) {
+			result += symbol;
+			num -= value;
+		}
+		// Optimization: if num hits 0, we can stop early
+		if (num == 0) break;
+	}
+
+	return result;
+
+}
 
 
+int Solution::romanToInt(std::string s) {
+	// Create a fixed-size array for ASCII characters.
+		// This is faster than unordered_map as it avoids hashing and heap access.
+	int values[128];
+	values['I'] = 1;
+	values['V'] = 5;
+	values['X'] = 10;
+	values['L'] = 50;
+	values['C'] = 100;
+	values['D'] = 500;
+	values['M'] = 1000;
+
+	int total = 0;
+	int n = s.length();
+
+	for (int i = 0; i < n; ++i) {
+		// Standard Roman numeral logic: if current < next, subtract.
+		// Using s[i+1] is safe because the string is null-terminated ('\0').
+		// values['\0'] is uninitialized here, so we check index bounds.
+		if (i + 1 < n && values[s[i]] < values[s[i + 1]]) {
+			total -= values[s[i]];
+		}
+		else {
+			total += values[s[i]];
+		}
+	}
+
+	return total;
+}
+
+std::string Solution::longestCommonPrefix(std::vector<std::string>& strs) {
+	if (strs.empty()) return "";
+
+	// Sort the strings lexicographically
+	std::sort(strs.begin(), strs.end());
+
+	std::string first = strs[0];
+	std::string last = strs[strs.size() - 1];
+	std::string result = "";
+
+	// Compare the first and last strings only
+	for (int i = 0; i < std::min(first.length(), last.length()); i++) {
+		if (first[i] != last[i]) {
+			return result;
+		}
+		result += first[i];
+	}
+
+	return result;
+}
+
+
+
+std::vector<std::vector<int>> Solution::threeSum(std::vector<int>& nums) {
+	std::vector<std::vector<int>> res;
+	std::sort(nums.begin(), nums.end()); // O(N log N)
+	int n = nums.size();
+
+	for (int i = 0; i < n - 2; ++i) {
+		// Optimization 1: If smallest number > 0, sum can't be 0.
+		if (nums[i] > 0) break;
+
+		// Optimization 2: Skip duplicates for the fixed pointer.
+		if (i > 0 && nums[i] == nums[i - 1]) continue;
+
+		int left = i + 1, right = n - 1;
+		while (left < right) {
+			int sum = nums[i] + nums[left] + nums[right];
+			if (sum == 0) {
+				res.push_back({ nums[i], nums[left], nums[right] });
+				// Optimization 3: Skip duplicates for left/right pointers.
+				while (left < right && nums[left] == nums[left + 1]) left++;
+				while (left < right && nums[right] == nums[right - 1]) right--;
+				left++;
+				right--;
+			}
+			else if (sum < 0) {
+				left++; // Need a larger value.
+			}
+			else {
+				right--; // Need a smaller value.
+			}
+		}
+	}
+	return res;
+}
+
+int Solution::threeSumClosest(std::vector<int>& nums, int target) {
+	int n = nums.size();
+	std::sort(nums.begin(), nums.end());
+	int closestSum = nums[0] + nums[1] + nums[2];
+
+	for (int i = 0; i < n - 2; ++i) {
+		// Optimization: Skip duplicate values for the first element
+		if (i > 0 && nums[i] == nums[i - 1]) continue;
+
+		int left = i + 1;
+		int right = n - 1;
+
+		while (left < right) {
+			int currentSum = nums[i] + nums[left] + nums[right];
+
+			if (currentSum == target) {
+				return currentSum;
+			}
+
+			// Update closestSum if the current deviation is smaller
+			if (std::abs(target - currentSum) < std::abs(target - closestSum)) {
+				closestSum = currentSum;
+			}
+
+			if (currentSum < target) {
+				left++;
+			}
+			else {
+				right--;
+			}
+		}
+	}
+	return closestSum;
+}
+
+std::vector<std::string> Solution::letterCombinations(std::string digits) {
+	if (digits.empty()) return {};
+
+	static const std::string mapping[] = {
+		"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"
+	};
+
+	std::vector<std::string> result = { "" };
+
+	// Pre-calculate total combinations to reserve memory
+	int totalSize = 1;
+	for (char d : digits) totalSize *= mapping[d - '0'].size();
+	result.reserve(totalSize);
+
+	for (char digit : digits) {
+		const std::string& letters = mapping[digit - '0'];
+		std::vector<std::string> temp;
+		// result.size() returns the number of elements (strings)
+		temp.reserve(result.size() * letters.size());
+
+		for (const std::string& combination : result) {
+			for (char l : letters) {
+				temp.push_back(combination + l);
+			}
+		}
+		result = std::move(temp); // Efficiently swap buffers
+	}
+
+	return result;
+}
