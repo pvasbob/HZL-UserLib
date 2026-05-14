@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <climits>
 #include <iostream>
+#include <stack>
 
 
  struct ListNode {
@@ -591,9 +592,155 @@ int threeSumClosest(std::vector<int>& nums, int target);
 std::vector<std::string> letterCombinations(std::string digits); 
 
 
+//
+//Given an array nums of n integers, return an array of all the unique quadruplets[nums[a], nums[b], nums[c], nums[d]] such that :
+//
+//0 <= a, b, c, d < n
+//	a, b, c, and d are distinct.
+//	nums[a] + nums[b] + nums[c] + nums[d] == target
+//	You may return the answer in any order.
+//
+//
+//
+//	Example 1:
+//
+//Input: nums = [1, 0, -1, 0, -2, 2], target = 0
+//	Output : [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
+//	Example 2 :
+//
+//	Input : nums = [2, 2, 2, 2, 2], target = 8
+//	Output : [[2, 2, 2, 2]]
+//
+//
+//	Constraints :
+//
+//	1 <= nums.length <= 200
+//	- 109 <= nums[i] <= 109
+//	- 109 <= target <= 109
+//
+std::vector<std::vector<int>> fourSum(std::vector<int>& nums, int target);
+
+
+//Given the head of a linked list, remove the nth node from the end of the list and return its head.
+//Input: head = [1, 2, 3, 4, 5], n = 2
+//	Output : [1, 2, 3, 5]
+//	Example 2 :
+//
+//	Input : head = [1], n = 1
+//	Output : []
+//	Example 3 :
+//
+//	Input : head = [1, 2], n = 1
+//	Output : [1]
+//
+//
+//	Constraints :
+//
+//	The number of nodes in the list is sz.
+//	1 <= sz <= 30
+//	0 <= Node.val <= 100
+//	1 <= n <= sz
+//
+ListNode* removeNthFromEnd(ListNode* head, int n);
+
+
+//Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+//
+//An input string is valid if:
+//
+//Open brackets must be closed by the same type of brackets.
+//Open brackets must be closed in the correct order.
+//Every close bracket has a corresponding open bracket of the same type.
+//
+//
+//Example 1:
+//
+//Input: s = "()"
+//
+//	Output : true
+//
+//	Example 2 :
+//
+//	Input : s = "()[]{}"
+//
+//	Output : true
+//
+//	Example 3 :
+//
+//	Input : s = "(]"
+//
+//	Output : false
+//
+//	Example 4 :
+//
+//	Input : s = "([])"
+//
+//	Output : true
+//
+//	Example 5 :
+//
+//	Input : s = "([)]"
+//
+//	Output : false
+//
+//
+//
+//	Constraints :
+//
+//	1 <= s.length <= 104
+//	s consists of parentheses only '()[]{}'.
+//
+bool isValid(std::string s);
+
+//You are given the heads of two sorted linked lists list1 and list2.
+//
+//Merge the two lists into one sorted list.The list should be made by splicing together the nodes of the first two lists.
+//
+//Return the head of the merged linked list.
+//
+//Example 1:
+//Input: list1 = [1, 2, 4], list2 = [1, 3, 4]
+//	Output : [1, 1, 2, 3, 4, 4]
+//	Example 2 :
+//
+//	Input : list1 = [], list2 = []
+//	Output : []
+//	Example 3 :
+//
+//	Input : list1 = [], list2 = [0]
+//	Output : [0]
+//
+//
+//	Constraints :
+//
+//	The number of nodes in both lists is in the range[0, 50].
+//	- 100 <= Node.val <= 100
+//	Both list1 and list2 are sorted in non - decreasing order.
+//
+ListNode* mergeTwoLists(ListNode* list1, ListNode* list2);
+
+
+//Given n pairs of parentheses, write a function to generate all combinations of well - formed parentheses.
+//Example 1:
+//
+//Input: n = 3
+//	Output : ["((()))", "(()())", "(())()", "()(())", "()()()"]
+//	Example 2 :
+//
+//	Input : n = 1
+//	Output : ["()"]
+//
+//
+//	Constraints :
+//
+//	1 <= n <= 8
+
+std::vector<std::string> generateParenthesis(int n);
+
+
+
 };
 
 //when i show you a problem.Please show an fair complicated example, and explain code each step, each loop, until the example is done.
 //and please always use the time - efficient way to solve problem, as nowadyas, space is not as critical as speed.
-
 

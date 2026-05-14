@@ -506,3 +506,207 @@ std::vector<std::string> Solution::letterCombinations(std::string digits) {
 
 	return result;
 }
+
+std::vector<std::vector<int>> Solution::fourSum(std::vector<int>& nums, int target) {
+	std::vector<std::vector<int>> result;
+	int n = nums.size();
+	if (n < 4) return result;
+
+	sort(nums.begin(), nums.end());
+
+	for (int i = 0; i < n - 3; ++i) {
+		// Skip duplicates for the first number
+		if (i > 0 && nums[i] == nums[i - 1]) continue;
+
+		// Pruning 1: Smallest possible sum is too large
+		if ((long long)nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) break;
+		// Pruning 2: Largest possible sum is too small
+		if ((long long)nums[i] + nums[n - 3] + nums[n - 2] + nums[n - 1] < target) continue;
+
+		for (int j = i + 1; j < n - 2; ++j) {
+			// Skip duplicates for the second number
+			if (j > i + 1 && nums[j] == nums[j - 1]) continue;
+
+			// Pruning 3: Smallest possible sum for this j is too large
+			if ((long long)nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) break;
+			// Pruning 4: Largest possible sum for this j is too small
+			if ((long long)nums[i] + nums[j] + nums[n - 2] + nums[n - 1] < target) continue;
+
+			int left = j + 1;
+			int right = n - 1;
+
+			while (left < right) {
+				long long sum = (long long)nums[i] + nums[j] + nums[left] + nums[right];
+
+				if (sum == target) {
+					result.push_back({ nums[i], nums[j], nums[left], nums[right] });
+					// Skip duplicates for the third and fourth numbers
+					while (left < right && nums[left] == nums[left + 1]) left++;
+					while (left < right && nums[right] == nums[right - 1]) right--;
+					left++;
+					right--;
+				}
+				else if (sum < target) {
+					left++;
+				}
+				else {
+					right--;
+				}
+			}
+		}
+	}
+	return result;
+}
+
+
+ListNode* Solution::removeNthFromEnd(ListNode* head, int n) {
+	ListNode* dummy = new ListNode(0, head);
+	ListNode* fast = dummy;
+	ListNode* slow = dummy;
+
+	// Move fast so that there is a gap of n nodes between fast and slow
+	for (int i = 0; i <= n; ++i) {
+		fast = fast->next;
+	}
+
+	// Move fast to the end, maintaining the gap
+	while (fast != nullptr) {
+		fast = fast->next;
+		slow = slow->next;
+	}
+
+	// Skip the nth node from the end
+	ListNode* nodeToDelete = slow->next;
+	slow->next = slow->next->next;
+
+	// Clean up memory (optional in LeetCode, but good practice)
+	delete nodeToDelete;
+
+	ListNode* newHead = dummy->next;
+	delete dummy;
+	return newHead;
+}
+
+
+bool Solution::isValid(std::string s) {
+	std::stack<char> st;
+	std::unordered_map<char, char> bracketMap = {
+		{')', '('},
+		{'}', '{'},
+		{']', '['}
+	};
+
+	for (char c : s) {
+		// If the character is a closing bracket
+		if (bracketMap.count(c)) {
+			// Check if stack is empty or top doesn't match
+			if (st.empty() || st.top() != bracketMap[c]) {
+				return false;
+			}
+			st.pop();
+		}
+		else {
+			// If it's an opening bracket, push to stack
+			st.push(c);
+		}
+	}
+
+	return st.empty();
+}
+
+ListNode* Solution::mergeTwoLists(ListNode* list1, ListNode* list2) {
+	// Create a dummy node to act as the starting point
+	ListNode dummy(0);
+	ListNode* tail = &dummy;
+
+	while (list1 != nullptr && list2 != nullptr) {
+		if (list1->val <= list2->val) {
+			tail->next = list1;   // Connect the smaller node
+			list1 = list1->next;  // Move the list1 pointer
+		}
+		else {
+			tail->next = list2;   // Connect the smaller node
+			list2 = list2->next;  // Move the list2 pointer
+		}
+		tail = tail->next;        // Move the tail forward
+	}
+
+	// If one list is exhausted, attach the rest of the other list
+	if (list1 != nullptr) {
+		tail->next = list1;
+	}
+	else {
+		tail->next = list2;
+	}
+
+	// Return the actual head (the node after our dummy)
+	return dummy.next;
+
+}
+
+
+std::vector<std::string> Solution::generateParenthesis(int n) {
+	std::vector<std::string> result;
+	// Optimization: Pre-allocate a string of the required size
+	std::string current(2 * n, ' ');
+
+	// Using a generic lambda (C++14) to avoid std::function overhead
+	auto backtrack = [&](auto self, int open, int close, int index) -> void {
+		if (index == 2 * n) {
+			result.push_back(current);
+			return;
+		}
+
+		if (open < n) {
+			current[index] = '(';
+			self(self, open + 1, close, index + 1);
+		}
+		if (close < open) {
+			current[index] = ')';
+			self(self, open, close + 1, index + 1);
+		}
+	};
+
+	backtrack(backtrack, 0, 0, 0);
+	return result;
+}
+
+
+std::vector<std::string> generateParenthesis(int n) {
+	std::vector<std::string> result;
+
+	// 1. Address Memory Allocation:
+	// The 8th Catalan number is 1430. Reserving space avoids 
+	// all internal vector reallocations and data copying.
+	result.reserve(1430);
+
+	// 2. Address Recursion/String Overhead:
+	// Pre-size the string so we only overwrite indices 
+	// instead of calling push_back/pop_back.
+	std::string current(2 * n, ' ');
+
+	// Using a "Fixed-Type" Lambda to avoid std::function overhead.
+	// We pass the lambda to itself as the first argument.
+	auto backtrack = [&](auto& self, int open, int close, int index) -> void {
+		// Base case
+		if (index == 2 * n) {
+			result.push_back(current);
+			return;
+		}
+
+		// Branch 1: Add opening
+		if (open < n) {
+			current[index] = '(';
+			self(self, open + 1, close, index + 1);
+		}
+
+		// Branch 2: Add closing
+		if (close < open) {
+			current[index] = ')';
+			self(self, open, close + 1, index + 1);
+		}
+	};
+
+	backtrack(backtrack, 0, 0, 0);
+	return result;
+}
