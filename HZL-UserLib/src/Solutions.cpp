@@ -710,3 +710,34 @@ std::vector<std::string> generateParenthesis(int n) {
 	backtrack(backtrack, 0, 0, 0);
 	return result;
 }
+
+
+ListNode* Solution::mergeKLists(std::vector<ListNode*>& lists) {
+	// Lambda comparator for a min-heap based on node values
+	auto cmp = [](ListNode* a, ListNode* b) { return a->val > b->val; };
+	std::priority_queue<ListNode*, std::vector<ListNode*>, decltype(cmp)> minHeap(cmp);
+
+	// Initialize heap with the head of each non-empty list
+	for (auto l : lists) {
+		if (l) minHeap.push(l);
+	}
+
+	ListNode dummy(0);
+	ListNode* curr = &dummy;
+
+	while (!minHeap.empty()) {
+		ListNode* smallest = minHeap.top();
+		minHeap.pop();
+
+		curr->next = smallest;
+		curr = curr->next;
+
+		// If the popped node has a successor, push it back into the heap
+		if (smallest->next) {
+			minHeap.push(smallest->next);
+		}
+	}
+
+	return dummy.next;
+
+}
