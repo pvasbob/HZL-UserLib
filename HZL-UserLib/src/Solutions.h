@@ -818,6 +818,58 @@ ListNode* swapPairs2(ListNode* head);
 //
 ListNode* reverseKGroup(ListNode* head, int k);
 
+
+//Given an integer array nums sorted in non - decreasing order, remove the duplicates in - place such 
+//that each unique element appears only once.The relative order of the elements should be kept the same.
+//
+//Example 1:
+//
+//Input: nums = [1, 1, 2]
+//	Output : 2, nums = [1, 2, _]
+//	Explanation : Your function should return k = 2, with the first two elements of nums being 1 and 2 respectively.
+//	It does not matter what you leave beyond the returned k(hence they are underscores).
+//	Example 2 :
+//
+//	Input : nums = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4]
+//	Output : 5, nums = [0, 1, 2, 3, 4, _, _, _, _, _]
+//	Explanation : Your function should return k = 5, with the first five elements of nums being 0, 1, 2, 3, and 4 respectively.
+//	It does not matter what you leave beyond the returned k(hence they are underscores).
+//
+//
+int removeDuplicates(std::vector<int>& nums); 
+
+//Given an integer array nums and an integer val, remove all occurrences of val in nums in - place.
+//The order of the elements may be changed.Then return the number of elements in nums which are not equal to val.
+//
+//Consider the number of elements in nums which are not equal to val be k, to get accepted, you need to do the following things :
+//
+//Change the array nums such that the first k elements of nums contain the elements which are not equal to val.
+//The remaining elements of nums are not important as well as the size of nums.
+//Return k.
+//
+int removeElement(std::vector<int>& nums, int val);
+
+//Given two strings needle and haystack, return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+//Example 1:
+//
+//Input: haystack = "sadbutsad", needle = "sad"
+//	Output : 0
+//	Explanation : "sad" occurs at index 0 and 6.
+//	The first occurrence is at index 0, so we return 0.
+//	Example 2 :
+//
+//	Input : haystack = "leetcode", needle = "leeto"
+//	Output : -1
+//	Explanation : "leeto" did not occur in "leetcode", so we return -1.
+//
+//
+//	Constraints :
+//
+//	1 <= haystack.length, needle.length <= 104
+//	haystack and needle consist of only lowercase English characters.
+//
+int strStr(std::string haystack, std::string needle);
+
 };
 
 //when i show you a problem.Please show an fair complicated example, and explain code each step, each loop, until the example is done.

@@ -867,3 +867,82 @@ ListNode* Solution::reverseKGroup(ListNode* head, int k) {
 
 	return dummy.next;
 }
+
+
+int Solution::removeDuplicates(std::vector<int>& nums) {
+	// Quick escape for empty arrays to avoid edge-case errors
+	if (nums.empty()) return 0;
+
+	// 'write_idx' tracks where the next unique element should be placed
+	int write_idx = 1;
+
+	// Modern range-based loop with a lambda helper for filtering
+	// The lambda captures nothing and compiles down to an inline comparison
+	auto is_duplicate = [](int current, int previous) noexcept {
+		return current == previous;
+	};
+
+	for (size_t read_idx = 1; read_idx < nums.size(); ++read_idx) {
+		if (!is_duplicate(nums[read_idx], nums[write_idx - 1])) {
+			nums[write_idx] = nums[read_idx];
+			++write_idx;
+		}
+	}
+
+	return write_idx;
+}
+
+
+int Solution::removeElement(std::vector<int>& nums, int val) {
+	int k = 0;
+
+	// A stateful lambda that mutates the vector in-place using the captured tracking index 'k'
+	// 'mutable' isn't needed here because we capture 'k' by reference, allowing us to modify it
+	auto process_element = [val, &k, &nums](const int num) noexcept {
+		if (num != val) {
+			nums[k++] = num;
+		}
+	};
+
+	// Use std::for_each to pass every element into our modern lambda pipeline
+	std::for_each(nums.begin(), nums.end(), process_element);
+
+	return k;
+}
+
+
+int Solution::strStr(std::string haystack, std::string needle) {
+	// Step 1: Use string_view for ultra-fast, zero-copy windowing
+	std::string_view h(haystack);
+	std::string_view n(needle);
+
+	const size_t h_len = h.length();
+	const size_t n_len = n.length();
+
+	if (n_len == 0) return 0;
+	if (h_len < n_len) return -1;
+
+	// Fast path check for single characters
+	if (n_len == 1) {
+		auto pos = h.find(n[0]);
+		return (pos == std::string_view::npos) ? -1 : static_cast<int>(pos);
+	}
+
+	// Step 2: Use a high-performance modern lambda for scanning
+	// We limit the search space up to (h_len - n_len)
+	const size_t max_search_idx = h_len - n_len;
+	const char first_char = n[0];
+
+	for (size_t i = 0; i <= max_search_idx; ++i) {
+		// Micro-optimization: Skip immediately if the first character doesn't match
+		if (h[i] != first_char) continue;
+
+		// Modern direct memory comparison via string_view slicing
+		// Compilers heavily optimize substr() comparison into vector instructions (SIMD memcmp)
+		if (h.substr(i, n_len) == n) {
+			return static_cast<int>(i);
+		}
+	}
+
+	return -1;
+}
