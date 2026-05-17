@@ -741,3 +741,129 @@ ListNode* Solution::mergeKLists(std::vector<ListNode*>& lists) {
 	return dummy.next;
 
 }
+
+
+ListNode* Solution::swapPairs1(ListNode* head) {
+	// Pointer to a pointer allows us to modify the 'next' 
+		// field of the previous node (or the head itself) uniformly.
+	ListNode** pp = &head;
+
+	// Lambda for swapping pairs to keep the loop clean and performant
+	auto swapNextTwo = [](ListNode** indirect) {
+		ListNode* a = *indirect;
+		ListNode* b = a->next;
+
+		// Perform the swap
+		a->next = b->next;
+		b->next = a;
+		// 
+		(*indirect)->next = (*indirect)->next->next;
+		(*indirect)->next->next = *indirect;
+
+
+
+		// Update the pointer that was pointing to 'a' to now point to 'b'
+		*indirect = b;
+	};
+
+	// Standard while loop is faster than recursion due to lack of stack overhead
+	while (*pp && (*pp)->next) {
+		swapNextTwo(pp);
+		// Move pp to the 'next' pointer of the new second node in the pair
+		pp = &((*pp)->next->next);
+	}
+
+	return head;
+}
+
+
+ListNode* Solution::swapPairs2(ListNode* head) {
+	// High-performance early exit optimization
+	if (!head || !head->next)[[unlikely]]{
+		return head;
+	}
+
+		// Modern stack-allocated dummy node to eliminate initial null checks
+	ListNode dummy(0);
+	dummy.next = head;
+	ListNode* prev = &dummy;
+
+	// High-performance lambda defined locally to manage the swap execution.
+	// Capturing by reference allows zero-overhead access to the execution context.
+	auto performSwap = [](ListNode* prior, ListNode* first) noexcept[[dont_discard]]->ListNode*{
+		ListNode* second = first->next;
+
+	// Re-link the nodes
+	first->next = second->next;
+	second->next = first;
+	prior->next = second;
+
+	// Return the new trailing node for the next iteration step
+	return first;
+	};
+
+	// Standard iterative traversal loop
+	// Passing both arguments leverages values already loaded into CPU registers during the loop 
+	// condition check. This prevents redundant memory reads, avoids pointer-chasing overhead inside 
+	// the lambda, and allows the compiler to map the node addresses directly to high-speed hardware 
+	// registers (RDI and RSI) for maximum execution velocity.
+	while (prev->next && prev->next->next) {
+		// Pass the anchor node and the first node of the pair to the lambda
+		prev = performSwap(prev, prev->next);
+	}
+
+	return dummy.next;
+}
+
+ListNode* Solution::reverseKGroup(ListNode* head, int k) {
+	// High-performance early exit optimization
+	if (!head || k == 1)[[unlikely]]{
+		return head;
+	}
+
+		// Stack-allocated dummy anchor to eliminate the "head" special case
+	ListNode dummy(0);
+	dummy.next = head;
+	ListNode* group_prev = &dummy;
+
+	// Lambda to reverse a sub-list of exactly k nodes.
+	// Accepts the boundary anchors to maintain optimal CPU register mapping.
+	auto reverseNextK = [k](ListNode* prior, ListNode* first) noexcept[[dont_discard]]->ListNode*{
+		ListNode* curr = first;
+		ListNode* prev = nullptr;
+		ListNode* next_node = nullptr;
+
+		// Standard iterative in-place reversal loop for k nodes
+		for (int i = 0; i < k; ++i) {
+			next_node = curr->next;
+			curr->next = prev;
+			prev = curr;
+			curr = next_node;
+		}
+
+		// Connect the reversed segment back into the main list topology
+		prior->next = prev;
+		first->next = curr;
+
+		// Return the new tail of the reversed group (the original 'first' node)
+		return first;
+	};
+
+	while (true) {
+		// Fast check: Verify if there are at least k nodes remaining
+		ListNode* tracker = group_prev;
+		for (int i = 0; i < k && tracker; ++i) {
+			tracker = tracker->next;
+		}
+
+		// If fewer than k nodes remain, leave them untouched and terminate
+		if (!tracker) {
+			break;
+		}
+
+		// Execute the batch reversal and advance group_prev to the new tail
+		group_prev = reverseNextK(group_prev, group_prev->next);
+	}
+
+	return dummy.next;
+}
