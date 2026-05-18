@@ -939,10 +939,188 @@ int Solution::strStr(std::string haystack, std::string needle) {
 
 		// Modern direct memory comparison via string_view slicing
 		// Compilers heavily optimize substr() comparison into vector instructions (SIMD memcmp)
-		if (h.substr(i, n_len) == n) {
+		if ((h[i] != first_char) && (h.substr(i, n_len) == n)) {
 			return static_cast<int>(i);
 		}
 	}
 
 	return -1;
 }
+
+
+int Solution::divide(int dividend, int divisor) {
+	// Edge case: overflow
+	if (dividend == INT_MIN && divisor == -1) {
+		return INT_MAX;
+	}
+	if (dividend == INT_MIN && divisor == 1) {
+		return INT_MIN;
+	}
+
+	// Determine the sign of the result
+	// True if the result should be negative
+	bool isNegative = (dividend < 0) ^ (divisor < 0);
+
+	// Convert both to negative to avoid overflow issues with INT_MIN
+	int negDividend = dividend < 0 ? dividend : -dividend;
+	int negDivisor = divisor < 0 ? divisor : -divisor;
+
+	int quotient = 0;
+
+	// Loop while the dividend is "smaller" or equal to divisor in the negative realm
+	// (e.g., -10 <= -3)
+	while (negDividend <= negDivisor) {
+		int currentDivisor = negDivisor;
+		int numShifts = 0;
+
+		// Double the divisor using left shift, ensuring we don't overflow INT_MIN.
+		// In negative numbers, shifting left makes it smaller (more negative), 
+		// so we must ensure it stays >= negDividend.
+		// Also, check currentDivisor >= -1073741824 (INT_MIN >> 1) to prevent overflow before shifting.
+		while (currentDivisor >= (INT_MIN >> 1) && (currentDivisor << 1) >= negDividend) {
+			currentDivisor <<= 1;
+			numShifts++;
+		}
+
+		// Subtract the shifted divisor from the dividend
+		negDividend -= currentDivisor;
+		// Add the accumulated power of 2 to the quotient
+		quotient += (1 << numShifts);
+	}
+
+	return isNegative ? -quotient : quotient;
+}
+
+
+std::vector<int> Solution::findSubstring(std::string s, std::vector<std::string>& words) {
+	std::vector<int> result;
+	if (s.empty() || words.empty()) return result;
+
+	int s_len = s.length();
+	int word_count = words.size();
+	int word_len = words[0].length();
+	int total_len = word_count * word_len;
+
+	if (s_len < total_len) return result;
+
+	// Build the reference frequency map for the target words
+	std::unordered_map<std::string_view, int> word_freq;
+	for (const auto& word : words) {
+		word_freq[word]++;
+	}
+
+	// Lambda function to handle the sliding window for a specific offset
+	auto scan_window = [&](int offset) {
+		std::unordered_map<std::string_view, int> current_freq;
+		int left = offset;
+		int count = 0; // Tracks the number of valid words currently in the window
+
+		for (int right = offset; right + word_len <= s_len; right += word_len) {
+			// Use std::string_view to prevent copying substrings allocation-free
+			std::string_view sub = std::string_view(s).substr(right, word_len);
+
+			if (word_freq.find(sub) != word_freq.end()) {
+				current_freq[sub]++;
+				count++;
+
+				// If a word's count exceeds its target frequency, shrink the window from the left
+				while (current_freq[sub] > word_freq[sub]) {
+					std::string_view left_sub = std::string_view(s).substr(left, word_len);
+					current_freq[left_sub]--;
+					count--;
+					left += word_len;
+				}
+
+				// If the window contains exactly the right number of words, we found a match
+				if (count == word_count) {
+					result.push_back(left);
+				}
+			}
+			else {
+				// Invalid word encountered: clear the current window state and reset
+				current_freq.clear();
+				count = 0;
+				left = right + word_len;
+			}
+		}
+	};
+
+	// Run the sliding window for all possible word alignments
+	for (int i = 0; i < word_len; ++i) {
+		scan_window(i);
+	}
+
+	return result;
+}
+
+void Solution::nextPermutation(std::vector<int>& nums) {
+	// size guard. Dont remove.
+	if (nums.size() <= 1) return;
+
+	// Step 1: Find the first decreasing element from the right (the pivot)
+	//static_cast<int> guarantees defensive code layers.First, it prevents a 
+	//segmentation fault if the size guard is ever removed during future code 
+	//refactoring.Second, it allows the index to safely cross into negative numbers(-1) 
+	//when scanning a fully descending array, avoiding a catastrophic unsigned underflow loop crash.
+	int i = static_cast<int>(nums.size()) - 2;
+	while (i >= 0 && nums[i] >= nums[i + 1]) {
+		i--;
+	}
+
+	// If i < 0, the entire array is in descending order (e.g., [3, 2, 1]).
+	// According to the rules, we just reverse the whole thing to get the lowest order.
+	if (i >= 0) {
+		// Step 2: Find the first element from the right greater than nums[i]
+		int j = static_cast<int>(nums.size()) - 1;
+		while (nums[j] <= nums[i]) {
+			j--;
+		}
+		// Swap the pivot with its next highest successor
+		std::swap(nums[i], nums[j]);
+	}
+
+	// Step 3: Reverse the elements after the pivot position to make them ascending
+	std::reverse(nums.begin() + i + 1, nums.end());
+}
+
+
+int Solution::longestValidParentheses(std::string s) {
+	// Create a lightweight view of the input string to pass to our lambda
+	std::string_view s_view = s;
+
+	// Keep noexcept here because the lambda only takes a view and is guaranteed not to throw
+	auto solve_stk = [](std::string_view str) noexcept -> int {
+		const int length = static_cast<int>(str.length());
+		if (length == 0) return 0;
+
+		std::vector<int> container;
+		container.reserve(length + 1);
+
+		std::stack<int, std::vector<int>> indices(std::move(container));
+		indices.push(-1);
+
+		int max_length = 0;
+
+		for (int i = 0; i < length; ++i) {
+			if (str[i] == '(') {
+				indices.push(i);
+			}
+			else {
+				indices.pop();
+
+				if (indices.empty()) {
+					indices.push(i);
+				}
+				else {
+					max_length = std::max(max_length, i - indices.top());
+				}
+			}
+		}
+		return max_length;
+	};
+
+	return solve_stk(s_view);
+}
+
+
+
